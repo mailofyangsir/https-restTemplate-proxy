@@ -1,6 +1,6 @@
 package com.config;
 
-import com.utils.HttpsClientRequestFactory;
+import com.utils.UtilsSS;
 import org.apache.http.HttpHost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -12,6 +12,9 @@ import org.springframework.web.client.RestTemplate;
 
 import java.net.InetSocketAddress;
 import java.net.Proxy;
+import java.security.KeyManagementException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
 
 
 /**
@@ -38,10 +41,13 @@ public class Configurations {
     }
 
     @Bean
-    public RestTemplate httpsRestTemplate() {
-        HttpsClientRequestFactory factory = new HttpsClientRequestFactory();
+    public RestTemplate httpsRestTemplate() throws NoSuchAlgorithmException, KeyStoreException, KeyManagementException {
+        //HttpsClientRequestFactory factory = new HttpsClientRequestFactory();
         InetSocketAddress socketAddress = new InetSocketAddress("127.0.0.1", 80);
         Proxy proxy = new Proxy(Proxy.Type.HTTP,socketAddress);
+
+        CloseableHttpClient closeableHttpClient = UtilsSS.acceptsUntrustedCertsHttpClient();
+        HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory(closeableHttpClient);
         //factory.setProxy(proxy);
         RestTemplate restTemplate = new RestTemplate(factory);
         return restTemplate;
